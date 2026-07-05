@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter notebooks
+*.ipynb
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+dsr-env/
+
+# Logs
+logs/*.log
+
+# Keep empty logs folder
+!logs/.gitkeep
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+.spyproject/
+.spyderproject/
+
+# Large/generated vector stores
+faiss_index/
+*.faiss
+*.pkl
+*.joblib
+
+# Environment variables
+.env
