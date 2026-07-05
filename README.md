@@ -1,4 +1,4 @@
-\# Document QA Chatbot (Local RAG Assistant)
+# Document QA Chatbot (Local RAG Assistant)
 
 
 
@@ -10,39 +10,39 @@ The application allows users to upload and query documents locally without relyi
 
 
 
-\---
+---
 
 
 
-\## Features
+## Features
 
 
 
-\- Load PDF, DOCX and TXT documents
+- Load PDF, DOCX and TXT documents
 
-\- Automatic document chunking
+- Automatic document chunking
 
-\- Semantic embeddings using Sentence Transformers
+- Semantic embeddings using Sentence Transformers
 
-\- Local FAISS vector database
+- Local FAISS vector database
 
-\- Streamlit chat interface
+- Streamlit chat interface
 
-\- GPU acceleration (CUDA) support
+- GPU acceleration (CUDA) support
 
-\- Centralised logging
+- Centralised logging
 
-\- Modular project structure
+- Modular project structure
 
-\- Local-first architecture
-
-
-
-\---
+- Local-first architecture
 
 
 
-\## Project Structure
+---
+
+
+
+## Project Structure
 
 
 
@@ -78,23 +78,23 @@ document\_qa\_chatbot\_local/
 
 └── src/
 
-&#x20;   ├── \_\_init\_\_.py
+         ├── \_\_init\_\_.py
 
-&#x20;   ├── paths.py
+         ├── paths.py
 
-&#x20;   ├── document\_loader.py
+         ├── document\_loader.py
 
-&#x20;   └── rag\_pipeline\_local.py
+         └── rag\_pipeline\_local.py
 
 ```
 
 
 
-\---
+---
 
 
 
-\## How It Works
+## How It Works
 
 
 
@@ -102,31 +102,31 @@ document\_qa\_chatbot\_local/
 
 Documents
 
-&#x20;   ↓
+   ↓
 
 Document Loader
 
-&#x20;   ↓
+   ↓
 
 Text Splitter
 
-&#x20;   ↓
+   ↓
 
 Embeddings
 
-&#x20;   ↓
+   ↓
 
 FAISS Vector Store
 
-&#x20;   ↓
+   ↓
 
 Retriever
 
-&#x20;   ↓
+   ↓
 
 User Question
 
-&#x20;   ↓
+   ↓
 
 Relevant Chunks Returned
 
@@ -142,11 +142,11 @@ Future versions may integrate a local LLM to provide full Retrieval-Augmented Ge
 
 
 
-\---
+---
 
 
 
-\## Supported File Types
+## Supported File Types
 
 
 
@@ -162,15 +162,15 @@ Future versions may integrate a local LLM to provide full Retrieval-Augmented Ge
 
 
 
-\---
+---
 
 
 
-\## Installation
+## Installation
 
 
 
-\### 1. Clone Repository
+### 1. Clone Repository
 
 
 
@@ -184,11 +184,11 @@ cd document\_qa\_chatbot\_local
 
 
 
-\---
+---
 
 
 
-\### 2. Create Virtual Environment
+### 2. Create Virtual Environment
 
 
 
@@ -202,11 +202,11 @@ conda activate rag-env
 
 
 
-\---
+---
 
 
 
-\### 3. Install PyTorch with CUDA Support
+### 3. Install PyTorch with CUDA Support
 
 
 
@@ -278,11 +278,11 @@ NVIDIA GeForce RTX XXXX
 
 
 
-\---
+---
 
 
 
-\### 4. Install Project Dependencies
+### 4. Install Project Dependencies
 
 
 
@@ -294,11 +294,11 @@ pip install -r requirements.txt
 
 
 
-\---
+---
 
 
 
-\## Running the Application
+## Running the Application
 
 
 
@@ -326,11 +326,11 @@ http://localhost:8501
 
 
 
-\---
+---
 
 
 
-\## Logging
+## Logging
 
 
 
@@ -350,27 +350,27 @@ The logging system captures:
 
 
 
-\- Application startup
+- Application startup
 
-\- Document loading
+- Document loading
 
-\- Chunk creation
+- Chunk creation
 
-\- Embedding generation
+- Embedding generation
 
-\- Vector store creation
+- Vector store creation
 
-\- Retrieval operations
+- Retrieval operations
 
-\- Errors and exceptions
-
-
-
-\---
+- Errors and exceptions
 
 
 
-\## Adding Documents
+---
+
+
+
+## Adding Documents
 
 
 
@@ -408,39 +408,39 @@ The application automatically indexes all supported files.
 
 
 
-\---
+---
 
 
 
-\## Technologies Used
+## Technologies Used
 
 
 
-\- Python
+- Python
 
-\- Streamlit
+- Streamlit
 
-\- LangChain
+- LangChain
 
-\- FAISS
+- FAISS
 
-\- Hugging Face Sentence Transformers
+- Hugging Face Sentence Transformers
 
-\- PyTorch
+- PyTorch
 
-\- CUDA
+- CUDA
 
-\- Pathlib
+- Pathlib
 
-\- Logging
-
-
-
-\---
+- Logging
 
 
 
-\## Example Questions
+---
+
+
+
+## Example Questions
 
 
 
@@ -464,35 +464,35 @@ What is the process for reporting incidents?
 
 
 
-\---
+---
 
 
 
-\## Future Enhancements
+## Future Enhancements
 
 
 
-\- Local LLM integration (Mistral, Llama, Gemma, OpenAI)
+- Local LLM integration (Mistral, Llama, Gemma, OpenAI)
 
-\- Source citation display
+- Source citation display
 
-\- Conversation memory
+- Conversation memory
 
-\- Multi-document collections
+- Multi-document collections
 
-\- Persistent FAISS storage
+- Persistent FAISS storage
 
-\- Hybrid search
+- Hybrid search
 
-\- Document upload via UI
-
-
-
-\---
+- Document upload via UI
 
 
 
-\## Author
+---
+
+
+
+## Author
 
 
 
@@ -504,17 +504,17 @@ Built as a learning and portfolio project demonstrating:
 
 
 
-\- Retrieval-Augmented Generation (RAG)
+- Retrieval-Augmented Generation (RAG)
 
-\- Vector Databases
+- Vector Databases
 
-\- NLP
+- NLP
 
-\- Embeddings
+- Embeddings
 
-\- Information Retrieval
+- Information Retrieval
 
-\- MLOps Best Practices
+- MLOps Best Practices
 
-\- Software Engineering Principles
+- Software Engineering Principles
 
