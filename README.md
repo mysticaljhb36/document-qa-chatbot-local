@@ -1,520 +1,314 @@
 # Document QA Chatbot (Local RAG Assistant)
 
+A fully local Retrieval-Augmented Generation (RAG) application built with Streamlit, LangChain, FAISS, Hugging Face Sentence Transformers and Ollama.
 
+The application allows users to query PDF, DOCX and TXT documents through a chat-style interface. Documents are embedded locally using Sentence Transformers, indexed with FAISS, and relevant document content is retrieved before a local Large Language Model (LLM) generates a response.
 
-A local Retrieval-Augmented Generation (RAG) application built with Streamlit, LangChain, FAISS, and Hugging Face embeddings.
-
-
-
-The application allows users to upload and query documents locally without relying on external vector databases. Documents are indexed using FAISS and relevant context is retrieved before answering user questions.
-
-
+No external vector database or cloud-based LLM is required.
 
 ---
-
-
 
 ## Features
 
-
-
 - Load PDF, DOCX and TXT documents
-
 - Automatic document chunking
-
 - Semantic embeddings using Sentence Transformers
-
 - Local FAISS vector database
-
+- Local Ollama LLM integration
+- Retrieval-Augmented Generation (RAG)
 - Streamlit chat interface
-
+- Conversation history
 - GPU acceleration (CUDA) support
-
 - Centralised logging
-
 - Modular project structure
-
 - Local-first architecture
 
-
-
 ---
-
-
 
 ## Project Structure
 
-
-
 ```text
-
-document\_qa\_chatbot\_local/
+document_qa_chatbot_local/
 
 │
-
 ├── app.py
-
 ├── requirements.txt
-
 ├── README.md
-
 ├── .gitignore
-
 │
-
 ├── data/
-
 │
-
 ├── logs/
-
 │   ├── .gitkeep
-
 │   ├── logger.py
-
 │   └── pipeline.log
-
 │
-
 └── src/
-
-         ├── \_\_init\_\_.py
-
-         ├── paths.py
-
-         ├── document\_loader.py
-
-         └── rag\_pipeline\_local.py
-
+    ├── __init__.py
+    ├── paths.py
+    ├── document_loader.py
+    ├── rag_pipeline_local.py
 ```
 
-
-
 ---
-
-
 
 ## How It Works
 
-
-
 ```text
-
 Documents
-
-   ↓
-
+    ↓
 Document Loader
-
-   ↓
-
+    ↓
 Text Splitter
-
-   ↓
-
-Embeddings
-
-   ↓
-
+    ↓
+Sentence Transformer Embeddings
+    ↓
 FAISS Vector Store
-
-   ↓
-
+    ↓
 Retriever
-
-   ↓
-
-User Question
-
-   ↓
-
-Relevant Chunks Returned
-
+    ↓
+Relevant Document Chunks
+    ↓
+Ollama (Llama 3.1)
+    ↓
+Generated Answer
 ```
 
+The application uses Retrieval-Augmented Generation (RAG):
 
-
-Current implementation performs retrieval and returns the most relevant document chunks.
-
-
-
-Future versions may integrate a local LLM to provide full Retrieval-Augmented Generation (RAG).
-
-
+1. Documents are loaded and split into chunks.
+2. Chunks are converted into embeddings.
+3. Embeddings are stored in a local FAISS vector database.
+4. Relevant chunks are retrieved for a user question.
+5. Retrieved content is passed to a local Ollama LLM.
+6. The LLM generates an answer grounded in the retrieved document information.
 
 ---
-
-
 
 ## Supported File Types
 
-
-
 | Format | Supported |
-
 |----------|----------|
-
 | PDF | ✓ |
-
 | DOCX | ✓ |
-
 | TXT | ✓ |
 
-
-
 ---
-
-
 
 ## Installation
 
-
-
 ### 1. Clone Repository
 
-
-
 ```bash
-
 git clone <repository-url>
 
-cd document\_qa\_chatbot\_local
-
+cd document_qa_chatbot_local
 ```
 
-
-
 ---
-
-
 
 ### 2. Create Virtual Environment
 
-
-
 ```bash
-
 conda create -n rag-env python=3.11
 
 conda activate rag-env
-
 ```
 
-
-
 ---
-
-
 
 ### 3. Install PyTorch with CUDA Support
 
-
-
 This project supports NVIDIA GPU acceleration.
-
-
 
 Check your CUDA version:
 
-
-
 ```bash
-
 nvidia-smi
-
 ```
 
-
-
-Install the appropriate PyTorch build from:
-
-
+Install the appropriate PyTorch build:
 
 https://pytorch.org/get-started/locally/
 
-
-
 Example for CUDA 12.1:
 
-
-
 ```bash
-
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
 ```
-
-
 
 Verify installation:
 
-
-
 ```python
-
 import torch
 
-
-
-print(torch.cuda.is\_available())
-
-print(torch.cuda.get\_device\_name(0))
-
+print(torch.cuda.is_available())
+print(torch.cuda.get_device_name(0))
 ```
-
-
 
 Expected output:
 
-
-
 ```text
-
 True
 
 NVIDIA GeForce RTX XXXX
-
 ```
-
-
 
 ---
 
+### 4. Install Ollama
 
+Download and install Ollama:
 
-### 4. Install Project Dependencies
+https://ollama.com
 
-
+Pull the Llama 3.1 model:
 
 ```bash
-
-pip install -r requirements.txt
-
+ollama pull llama3.1
 ```
 
+Verify Ollama is running:
 
+```bash
+ollama list
+```
 
 ---
 
+### 5. Install Project Dependencies
 
+```bash
+pip install -r requirements.txt
+```
+
+---
 
 ## Running the Application
 
-
-
 Launch Streamlit:
 
-
-
 ```bash
-
 streamlit run app.py
-
 ```
-
-
 
 Application will open in your browser:
 
-
-
 ```text
-
 http://localhost:8501
-
 ```
 
-
-
 ---
-
-
 
 ## Logging
 
-
-
 Logs are written to:
 
-
-
 ```text
-
 logs/pipeline.log
-
 ```
-
-
 
 The logging system captures:
 
-
-
 - Application startup
-
 - Document loading
-
 - Chunk creation
-
 - Embedding generation
-
-- Vector store creation
-
+- FAISS vector store creation
 - Retrieval operations
-
+- Ollama answer generation
 - Errors and exceptions
 
-
-
 ---
-
-
 
 ## Adding Documents
 
-
-
 Place supported documents inside:
 
-
-
 ```text
-
 data/
-
 ```
-
-
 
 Example:
 
-
-
 ```text
-
 data/
 
-├── company\_policy.pdf
-
-├── user\_guide.docx
-
+├── company_policy.pdf
+├── user_guide.docx
 └── notes.txt
-
 ```
-
-
 
 The application automatically indexes all supported files.
 
-
-
 ---
-
-
 
 ## Technologies Used
 
-
-
 - Python
-
 - Streamlit
-
 - LangChain
-
 - FAISS
-
+- Ollama
+- Llama 3.1
 - Hugging Face Sentence Transformers
-
 - PyTorch
-
 - CUDA
-
 - Pathlib
-
 - Logging
 
-
-
 ---
-
-
 
 ## Example Questions
 
-
-
 ```text
-
 What does the company policy say about annual leave?
-
-
-
-Summarise the key points in this document.
-
-
-
-What are the responsibilities of the data protection officer?
-
-
-
-What is the process for reporting incidents?
-
 ```
 
+```text
+Summarise the key points in this document.
+```
 
+```text
+What are the responsibilities of the data protection officer?
+```
+
+```text
+What is the process for reporting incidents?
+```
+
+```text
+What information does this document contain about employee benefits?
+```
 
 ---
-
-
 
 ## Future Enhancements
 
-
-
-- Local LLM integration (Mistral, Llama, Gemma, OpenAI)
-
 - Source citation display
-
-- Conversation memory
-
-- Multi-document collections
-
 - Persistent FAISS storage
-
 - Hybrid search
-
 - Document upload via UI
-
-
+- Multi-document collections
+- Streaming responses
+- Conversation memory
+- User authentication
+- Docker deployment
+- Azure deployment pipeline
 
 ---
 
-
-
 ## Author
 
-
-
-Daniel Okereke
-
-
+**Daniel Okereke**
 
 Built as a learning and portfolio project demonstrating:
 
-
-
 - Retrieval-Augmented Generation (RAG)
-
 - Vector Databases
-
-- NLP
-
+- Natural Language Processing (NLP)
 - Embeddings
-
 - Information Retrieval
-
+- Local LLM Deployment
 - MLOps Best Practices
-
 - Software Engineering Principles
-
