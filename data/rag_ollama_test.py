@@ -44,19 +44,19 @@ def main():
     )
 
     prompt = f"""
-You are a helpful document assistant.
-
-Answer the question using only the context below.
-If the answer is not in the context, say you do not know.
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-"""
+            You are a helpful document assistant.
+            
+            Answer the question using only the context below.
+            If the answer is not in the context, say you do not know.
+            
+            Context:
+            {context}
+            
+            Question:
+            {question}
+            
+            Answer:
+            """
 
     print("Generating answer with Ollama...")
     response = llm.invoke(prompt)
