@@ -285,16 +285,19 @@ What information does this document contain about employee benefits?
 
 ## Future Enhancements
 
-- Source citation display
 - Persistent FAISS storage
-- Hybrid search
-- Document upload via UI
-- Multi-document collections
-- Streaming responses
-- Conversation memory
-- User authentication
-- Docker deployment
+- Hybrid search (BM25 + Semantic Search)
+- Document upload via Streamlit UI
+- Separate document collections and workspaces
+- Enhanced source citations with page previews and confidence scores
+- Streaming LLM responses
+- Conversation memory and contextual follow-up questions
+- Retrieval reranking using Cross-Encoders
+- RAG evaluation framework (RAGAS / DeepEval)
+- User authentication and access control
+- Docker containerisation
 - Azure deployment pipeline
+- Automated document ingestion and indexing
 
 ---
 

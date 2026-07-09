@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
         # Retrieve relevant document chunks and generate
         # an answer using the local Ollama model.
-        answer = generate_answer(
+        answer, sources = generate_answer(
             question=question,
             vector_store=vector_store
         )
@@ -131,7 +131,8 @@ if __name__ == "__main__":
         st.session_state.chat_history.append(
             {
                 "question": question,
-                "answer": answer
+                "answer": answer,
+                "sources": sources
             }
         )
 
@@ -139,4 +140,12 @@ if __name__ == "__main__":
     for chat in st.session_state.chat_history:
         st.markdown(f"**You:** {chat['question']}")
         st.markdown(f"**Assistant:** {chat['answer']}")
+        # Print Sources
+        if chat.get('sources'):
+            st.markdown("**Sources:**")
+            # Unpack and print sources
+            for source in chat['sources']:
+                st.markdown(f"- {source}")
+            
+
         st.divider()

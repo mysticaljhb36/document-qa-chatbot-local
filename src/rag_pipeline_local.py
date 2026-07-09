@@ -23,6 +23,7 @@ import torch
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
 from langchain_ollama import ChatOllama
 
 # To create or retrieve a python logger object
@@ -32,7 +33,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 def create_vector_store(
-    documents: list
+    documents: list[Document]
     ) -> FAISS:
     
     """
@@ -83,65 +84,96 @@ def create_vector_store(
     return vector_store
 
 
+def extract_sources(retrieved_docs: list[Document]) -> list[str]:
+    """
+    Extract unique source references from retrieved documents.
+
+    Args:
+        retrieved_docs: Documents returned by the retriever.
+
+    Returns:
+        A list of unique source references.
+    """
+
+    sources = []
+
+    for doc in retrieved_docs:
+        source = doc.metadata.get("source", "Unknown source")
+        page = doc.metadata.get("page_label") or doc.metadata.get("page")
+
+        if page is not None:
+            source_reference = f"{source} — page {page}"
+        else:
+            source_reference = source
+
+        if source_reference not in sources:
+            sources.append(source_reference)
+
+    return sources
+
+
 def generate_answer(
     question: str,
     vector_store: FAISS
-    ) -> str:
-    
+) -> tuple[str, list[str]]:
     """
-    Generate an answer using retrieved document chunks and Ollama.
+    Generate an answer to a user question using score-based RAG retrieval.
 
     Args:
-        question:
-            User question submitted through the Streamlit app.
-
-        vector_store:
-            FAISS vector store created from embedded document chunks.
+        question: User question.
+        vector_store: FAISS vector store containing embedded document chunks.
 
     Returns:
-        Generated answer from the local Ollama model.
+        A tuple containing:
+            - Generated answer as a string.
+            - List of source references used to support the answer.
     """
 
-    # Convert the FAISS vector store into a retriever.
-    # MMR helps return diverse but still relevant document chunks.
-    retriever = vector_store.as_retriever(
-        search_type="mmr",
-        search_kwargs={"k": 4}
+    TOP_K = 4
+    SIMILARITY_SCORE_THRESHOLD = 1.2
+
+    # Retrieve the top matching document chunks with their FAISS distance scores.
+    # Lower scores indicate stronger semantic similarity.
+    docs_and_scores = vector_store.similarity_search_with_score(
+        question,
+        k=TOP_K
     )
 
-    # Retrieve document chunks most relevant to the user's question.
-    retrieved_docs = retriever.invoke(question)
+    # Keep only chunks that are sufficiently relevant.
+    relevant_docs = [doc for doc, score in docs_and_scores
+                     if score < SIMILARITY_SCORE_THRESHOLD
+                     ]
 
-    # Combine retrieved chunks into one document information block
-    # that will be passed to the local LLM.
+    if not relevant_docs:
+        return "I do not know based on the available documents.", []
+
+    sources = extract_sources(relevant_docs)
+
     document_information = "\n\n".join(
         doc.page_content
-        for doc in retrieved_docs
+        for doc in relevant_docs
     )
 
-    # Initialise the local Ollama chat model only when an answer
-    # is required. This avoids caching the LLM object in Streamlit.
     llm = ChatOllama(
-        model="llama3.1",
-        temperature=0
+        model="llama3.1"
     )
 
     prompt = f"""
-            You are a helpful document assistant.
-            
-            Answer the question using only the document information below.
-            
-            If the answer is not in the document, say you do not know.
-            
-            Document information:
-            {document_information}
-            
-            Question:
-            {question}
-            
-            Answer:
+                You are a helpful document assistant.
+                
+                Answer the question using only the document information below.
+                
+                If the answer is not in the document, say you do not know.
+                
+                Document information:
+                {document_information}
+                
+                Question:
+                {question}
+                
+                Answer:
             """
 
     response = llm.invoke(prompt)
 
-    return response.content
+    return response.content, sources
