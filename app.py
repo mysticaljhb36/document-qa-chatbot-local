@@ -28,8 +28,13 @@ Retrieval is performed locally using Sentence Transformers and FAISS,
 while answer generation is handled by a local Ollama LLM.
 """
 
-import os
+from src.startup import create_directories
+create_directories()
 
+# Run loggers.py to initiate logging pipeline
+from src.logger import loggers
+
+import os
 # Remove certificate bundle overrides that can cause Hugging Face
 # model downloads to fail in some local/conda environments.
 os.environ.pop("SSL_CERT_FILE", None)
@@ -39,14 +44,11 @@ import logging
 
 import streamlit as st
 
-from src.paths import DATA_DIR
-from src.document_loader import load_documents_from_folder
 from src.rag_pipeline_local import (
-    create_vector_store,
-    generate_answer
+    generate_answer,
+    get_vector_store,
 )
-# Run loggers.py to initiate logging pipeline
-from src.logger import loggers
+
 
 # To create or retrieve a python logger object
 logger = logging.getLogger(__name__)
@@ -70,27 +72,6 @@ st.caption(
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Streamlit reruns the script whenever the user interacts with the app.
-# Without @st.cache_resource caching, the documents and embeddings may be
-# rebuilt every time a user asks a question.
-@st.cache_resource
-def load_vector_store():
-    """
-    Load documents and initialise the local retrieval system.
-
-    Streamlit caches this function so the documents, embeddings and
-    FAISS vector store are not rebuilt every time the user asks a
-    new question.
-    """
-
-    # Load all supported documents from the data directory.
-    documents = load_documents_from_folder(DATA_DIR)
-
-    # Create embeddings and build the FAISS vector index.
-    vector_store = create_vector_store(documents)
-
-    return vector_store
-
 
 if __name__ == "__main__":
 
@@ -101,18 +82,19 @@ if __name__ == "__main__":
     try:
         # Load the cached vector store. If this is the first run,
         # documents will be processed and indexed automatically.
-        vector_store = load_vector_store()
+        vector_store = get_vector_store()
 
     except Exception as error:
-
         logger.exception(
-            f"Failed to initialise QA system: {error}"
+            "Failed to initialise QA system."
         )
-
+    
         st.error(
             "Application failed to initialise."
         )
-
+    
+        st.exception(error)
+    
         st.stop()
 
     # Display a ChatGPT-style input box for document questions.
@@ -142,7 +124,7 @@ if __name__ == "__main__":
         st.markdown(f"**Assistant:** {chat['answer']}")
         # Print Sources
         if chat.get('sources'):
-            st.markdown("**Sources:**")
+            st.markdown("**Source(s):**")
             # Unpack and print sources
             for source in chat['sources']:
                 st.markdown(f"- {source}")

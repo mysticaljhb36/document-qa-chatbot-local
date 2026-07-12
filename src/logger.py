@@ -18,14 +18,6 @@ import logging
 from src.paths import LOG_DIR
 
 
-# Create logs directory if it does not already exist.
-# exist_ok=True prevents errors when the directory
-# already exists and does not overwrite its contents.
-LOG_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
 # Configure application-wide logging.
 logging.basicConfig(
 
@@ -51,7 +43,7 @@ logging.basicConfig(
     force=True
 )
 
-# Suppress unncessary third party logs
+# Suppress unncessary third party logs below WARNING level
 for noisy_logger in [
     "httpx",
     "httpcore",

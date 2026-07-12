@@ -8,6 +8,72 @@ No external vector database or cloud-based LLM is required.
 
 ---
 
+## RAG vs Conversation Memory
+
+This project demonstrates Retrieval-Augmented Generation (RAG), which is not the same as conversation memory.
+
+RAG retrieves relevant information from documents to answer user questions, while conversation memory enables the assistant to understand references to previous interactions.
+
+Example:
+
+User: Tell me about annual leave.
+
+Assistant: Employees are entitled to 25 days of annual leave.
+
+User: Can they carry it forward?
+
+Without conversation memory, the assistant may not know that "they" refers to employees and "it" refers to annual leave, even if the information exists in the documents.
+
+This project currently implements document retrieval and answer generation using a local FAISS vector store and Ollama LLM. Conversation memory is planned as a future enhancement.
+
+---
+
+## Document Change Detection
+
+To avoid rebuilding embeddings on every startup, the application maintains a document manifest.
+
+Each document is tracked using:
+
+- Relative file path
+- File size
+- Last modified timestamp
+- SHA-256 content hash
+
+On startup:
+
+1. The current manifest is generated.
+2. The previous manifest is loaded.
+3. Added, modified and deleted documents are identified.
+4. If no changes are detected, the existing FAISS index is loaded.
+5. If changes are detected, the FAISS index is rebuilt and the manifest updated.
+
+This significantly reduces startup time for large document collections.
+
+---
+
+## Development Progress
+
+### Phase 1
+- Project foundations
+
+### Phase 2
+- Local RAG implementation
+
+### Phase 3
+- Retrieval quality and source attribution
+
+### Phase 4
+- Persistent FAISS storage
+- Manifest-based document tracking
+- Automatic rebuild detection
+
+### Upcoming
+- Conversational memory
+- Hybrid search
+- Agentic RAG
+
+---
+
 ## Features
 
 - Load PDF, DOCX and TXT documents
@@ -29,7 +95,6 @@ No external vector database or cloud-based LLM is required.
 
 ```text
 document_qa_chatbot_local/
-
 │
 ├── app.py
 ├── requirements.txt
@@ -38,16 +103,24 @@ document_qa_chatbot_local/
 │
 ├── data/
 │
+├── vector_store/
+│   ├── index.faiss
+│   ├── index.pkl
+│   └── document_manifest.json
+│
 ├── logs/
 │   ├── .gitkeep
 │   ├── logger.py
 │   └── pipeline.log
 │
 └── src/
-    ├── __init__.py
+    ├── config.py
     ├── paths.py
+    ├── startup.py
+    ├── logger.py
     ├── document_loader.py
-    ├── rag_pipeline_local.py
+    ├── document_manifest.py
+    └── rag_pipeline_local.py
 ```
 
 ---
@@ -56,23 +129,29 @@ document_qa_chatbot_local/
 
 ```text
 Documents
-    ↓
+    │
+    ▼
 Document Loader
-    ↓
-Text Splitter
-    ↓
-Sentence Transformer Embeddings
-    ↓
-FAISS Vector Store
-    ↓
+    │
+    ▼
+Document Manifest
+    │
+    ▼
+Change Detection
+    │
+ ┌──┴──┐
+ │      │
+ ▼     ▼
+Load   Rebuild
+FAISS  FAISS
+ │       │
+ └──┬──┘
+     ▼
 Retriever
-    ↓
-Relevant Document Chunks
-    ↓
+    ▼
 Ollama (Llama 3.1)
-    ↓
-Generated Answer
-```
+    ▼
+Answer + Sources```
 
 The application uses Retrieval-Augmented Generation (RAG):
 

@@ -75,16 +75,19 @@ def load_documents_from_folder(folder_path: str | Path):
         # Select the correct LangChain loader for each supported file type.
         if file.suffix.lower() == ".pdf":
             loader = PyPDFLoader(str(file))
-            print(file)
-
+            logger.info(f"Loading PDF file(s): {file}")
+            
         elif file.suffix.lower() == ".docx":
             loader = Docx2txtLoader(str(file))
+            logger.info(f"Loading DOCX file(s): {file}")
 
         elif file.suffix.lower() == ".txt":
             loader = TextLoader(str(file), encoding="utf-8")
+            logger.info(f"Loading TXT file(s): {file}")
 
         else:
-            # Unsupported files i.e image.png shouldn't crash the full pipeline.
+            logger.info(f"Excluding unsupported file(s): {file}")
+            # Skip unsupported files i.e image.png, temp.py etc. 
             continue
 
         try:
@@ -97,7 +100,7 @@ def load_documents_from_folder(folder_path: str | Path):
                 f"Failed to load {file.name}: {error}"
             )
         
-            continue
+            continue #skip errors because we don't want to crash the pipeline
 
         # Add source metadata so retrieved chunks can be traced
         # back to the original file later.
@@ -108,4 +111,3 @@ def load_documents_from_folder(folder_path: str | Path):
         documents.extend(loaded_documents)
 
     return documents
-
